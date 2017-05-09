@@ -2,7 +2,7 @@ var MyApp = angular.module('MyApp', ['angularUtils.directives.dirPagination', 'n
     .constant('API', 'http://localhost/vovan/ScutiTestApp3Test/public/');//dependecy theo stt
 
 //----------------------------------------------------------------------//
-//-------------------declare to handle file upload:---------------------//
+//---------------------------declare to handle file upload:---------------------//
 //----------------------------------------------------------------------//
 
 MyApp.directive('file', function () {
