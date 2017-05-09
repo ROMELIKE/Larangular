@@ -86,6 +86,7 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
                 age: $scope.member.age,
                 avatar: $scope.file,
             };
+            // console.log($scope.file);
             $http({
                 method: 'POST',
                 url: url,
@@ -106,7 +107,7 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
                 $("#myModal").modal('hide');
 
             }, function errorCallback(response) {
-                console.log(response.data);
+                console.log(response);
             });
         }
         if (state == 'edit') {
