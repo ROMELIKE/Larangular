@@ -9,15 +9,27 @@ use DB;
 class MemberModel extends Model
 {
     protected $table = 'member';
+    protected $fillable
+        = [
+            'name',
+            'address',
+            'age',
+            'avatar',
+            'created_at',
+            'update_at',
+            'email',
+            'status'
+        ];
 
     /**
      * Function: get List of members.
+     *
      * @param string $orderBy
      * @param string $by
      *
      * @return ResultObject
      */
-    public function getListMember($orderBy = 'created_at', $by='DESC')
+    public function getListMember($orderBy = 'created_at', $by = 'DESC')
     {
         $result = new ResultObject();
         try {
@@ -43,6 +55,7 @@ class MemberModel extends Model
 
     /**
      * Function: add new member.
+     *
      * @param $member
      *
      * @return ResultObject
@@ -107,6 +120,7 @@ class MemberModel extends Model
 
     /**
      * Function: Update member:
+     *
      * @param $member
      *
      * @return ResultObject
@@ -158,6 +172,7 @@ class MemberModel extends Model
 
     /**
      * Function: Delete member:
+     *
      * @param $id
      *
      * @return ResultObject
@@ -187,6 +202,7 @@ class MemberModel extends Model
 
     /**
      * Function: get member by ID
+     *
      * @param $id
      *
      * @return ResultObject
@@ -215,6 +231,7 @@ class MemberModel extends Model
 
     /**
      * Function: check name exist or not (if set 'name'=>unique)
+     *
      * @param $name
      *
      * @return ResultObject

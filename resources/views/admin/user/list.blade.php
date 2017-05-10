@@ -200,7 +200,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" ng-click="save(state,id)"
-                            ng-disabled="frmStudent.$invalid">Save
+                            >Save
                     </button>
                 </div>
             </div><!-- /.modal-content -->

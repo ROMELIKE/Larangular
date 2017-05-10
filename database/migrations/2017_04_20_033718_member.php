@@ -16,6 +16,8 @@ class Member extends Migration
         Schema::create('member', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('email');
+            $table->tinyInteger('status');
             $table->string('address');
             $table->integer('age');
             $table->string('avatar');

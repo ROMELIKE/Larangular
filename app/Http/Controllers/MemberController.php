@@ -34,7 +34,6 @@ class MemberController extends Controller
         $member = new MemberObject();
         $model = new MemberModel();
         $listMember = $model->getListMember()->result;
-//        dd($listMember);
 
         if (isset($request->name) && $request->name != 'undefined') {
             $member->name = $request->name;
@@ -98,9 +97,9 @@ class MemberController extends Controller
         }
         $member->created_at = date('y-m-d H:i:s');
 
-
         //Handle Add member:
         $action = $model->addMember($member);
+        dd($action->message);
         if ($action->messageCode) {
 
             //reload new data list.
@@ -243,6 +242,7 @@ class MemberController extends Controller
         $action = $model->updateMember($member);
         if ($action->messageCode) {
             $newListMember = $model->getListMember()->result;
+
             return response()->json([
                 'level' => 'success',
                 'message' => $action->message,
