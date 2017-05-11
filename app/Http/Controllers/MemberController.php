@@ -7,6 +7,7 @@ use App\Http\Requests\MemberRequest;
 use App\Model\MemberModel;
 use Illuminate\Http\Request;
 use File;
+use Illuminate\Http\UploadedFile;
 
 class MemberController extends Controller
 {
@@ -30,7 +31,6 @@ class MemberController extends Controller
     public function postAdd(MemberRequest $request)
     {
         //check input request and filter to get data:
-
         $member = new MemberObject();
         $model = new MemberModel();
         $listMember = $model->getListMember()->result;
@@ -54,13 +54,15 @@ class MemberController extends Controller
         if (isset($request->avatar) && $request->avatar != 'undefined'
             && $request->avatar
         ) {
-
-            //validate extension of upload image:
-            $ext = $request->avatar->getMimeType();
-            if (in_array($ext,
-                ['image/jpeg', 'image/png', 'image/jpg', 'gif'])) {
+            $mimeType = $request->avatar->getClientMimeType();
+            $extAddition = $request->avatar->getClientOriginalExtension();
+            if (in_array($mimeType,
+                    ['image/jpeg', 'image/png', 'image/jpg', 'gif','inode/x-empty'])
+                AND in_array($extAddition, ['png', 'jpg', 'jpeg', 'gif'])
+            ) {
                 //validate capacity of upload image:
                 if (!($request->avatar->getSize() > 10485760)) {
+//                    dd($request->avatar->getSize());
                     //get original name of picture.
                     $thumbnail = $request->avatar->getClientOriginalName();
 
@@ -75,10 +77,11 @@ class MemberController extends Controller
                     //create new picture.
                     $newThumbnail = $newName.".".$extension;
 
-                    //move image to appropriate Folder:
-                    $request->avatar->move('admin/images/avatars/',
-                        $newThumbnail);
-
+                    if($mimeType!='inode/x-empty'){
+                        //move image to appropriate Folder:
+                        $request->avatar->move('admin/images/avatars/',
+                            $newThumbnail);
+                    }
                     $member->avatar = $newThumbnail;
                 } else {
                     return response()->json([
@@ -96,10 +99,9 @@ class MemberController extends Controller
             }
         }
         $member->created_at = date('y-m-d H:i:s');
-
         //Handle Add member:
         $action = $model->addMember($member);
-        dd($action->message);
+
         if ($action->messageCode) {
 
             //reload new data list.
@@ -322,5 +324,4 @@ class MemberController extends Controller
     /**************************************************************************/
     /*************************       ENDFILE         **************************/
     /**************************************************************************/
-
 }

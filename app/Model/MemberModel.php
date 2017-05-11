@@ -81,7 +81,7 @@ class MemberModel extends Model
         if ($member->avatar) {
             $param['avatar'] = $member->avatar;
         } else {
-            $param['avatar'] = null;
+            $param['avatar'] = '';
         }
         if ($member->email) {
             $param['email'] = $member->email;
