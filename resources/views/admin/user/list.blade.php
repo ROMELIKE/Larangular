@@ -81,10 +81,10 @@
         <tr dir-paginate="mb in members |filter:TextSearch |orderBy:sortColumn:reverse |itemsPerPage:5 as postItems"
             pagination-id="main-pagination" class="text-center"> <!--itemperpage should is the last position-->
             <td><img class="img-thumbnail" width="80" ng-src="{{ url('admin/images/avatars') }}/@{{ mb.avatar }}"></td>
-            <td>@{{ mb.name }}</td>
+            <td>@{{ mb.name.substring(0,30) }}</td>
             <td>@{{ mb.age }}</td>
             <td>@{{ mb.email }}</td>
-            <td>@{{ mb.address }}</td>
+            <td>@{{ mb.address.substring(0,50) }}</td>
             <td>
                 <button class="btn btn-default btn-xs btn-detail" id="btn-edit" ng-click="modal('edit',mb.id)">Edit
                 </button>
@@ -182,7 +182,7 @@
                                         <div class="col-sm-8">
                                             <img ng-show="myForm.file.$valid" ngf-thumbnail="picFile"
                                                  class="img-thumbnail" width="100em" id="image">
-                                            <button ng-click="picFile = null" ng-show="picFile" class="btn btn-danger btn-sm">
+                                            <button ng-click="picFile = null" ng-show="picFile" class="btn btn-sm btn-warning">
                                                 <span style="font-size: 10px">
                                                     <i class="fa fa-close"></i>
                                                 </span>
@@ -200,7 +200,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" ng-click="save(state,id)"
-                            ng-disabled="frmStudent.$invalid">Save
+                            >Save
                     </button>
                 </div>
             </div><!-- /.modal-content -->

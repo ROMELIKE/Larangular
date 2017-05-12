@@ -7,6 +7,7 @@ use App\Http\Requests\MemberRequest;
 use App\Model\MemberModel;
 use Illuminate\Http\Request;
 use File;
+use Illuminate\Http\UploadedFile;
 
 class MemberController extends Controller
 {
@@ -30,38 +31,34 @@ class MemberController extends Controller
     public function postAdd(MemberRequest $request)
     {
         //check input request and filter to get data:
-
         $member = new MemberObject();
         $model = new MemberModel();
         $listMember = $model->getListMember()->result;
-//        dd($listMember);
 
-        if (isset($request->name) && $request->name != 'undefined') {
+        if (isset($request->name) && $request->name ) {
             $member->name = $request->name;
         }
-        if (isset($request->email) && $request->email != 'undefined') {
-            $member->email = $request->email;
-        }
-        if (isset($request->address) && $request->address != 'undefined') {
+        if (isset($request->address) && $request->address ) {
             $member->address = $request->address;
         }
-        if (isset($request->age) && $request->age != 'undefined') {
+        if (isset($request->age) && $request->age ) {
             $member->age = $request->age;
-        }
-        if (isset($request->status) && $request->status != 'undefined') {
-            $member->status = 1;
+        }else{
+            return response()->json([
+                'level' => 'danger',
+                'message' => 'age must more than 0',
+                'listmember' => $listMember
+            ]);
         }
         //Handle images:
         if (isset($request->avatar) && $request->avatar != 'undefined'
             && $request->avatar
         ) {
-
-            //validate extension of upload image:
-            $ext = $request->avatar->getMimeType();
-            if (in_array($ext,
+            $mimeType = $request->avatar->getClientMimeType();
+            if (in_array($mimeType,
                 ['image/jpeg', 'image/png', 'image/jpg', 'gif'])) {
                 //validate capacity of upload image:
-                if (!($request->avatar->getSize() > 10485760)) {
+                if (!($request->avatar->getClientSize() > 10485760)) {
                     //get original name of picture.
                     $thumbnail = $request->avatar->getClientOriginalName();
 
@@ -75,11 +72,12 @@ class MemberController extends Controller
 
                     //create new picture.
                     $newThumbnail = $newName.".".$extension;
-
-                    //move image to appropriate Folder:
-                    $request->avatar->move('admin/images/avatars/',
-                        $newThumbnail);
-
+                    try {
+                        $request->avatar->move('admin/images/avatars/',
+                            $newThumbnail);
+                    } catch (\Exception $exception) {
+                        $member->avatar = $newThumbnail;
+                    }
                     $member->avatar = $newThumbnail;
                 } else {
                     return response()->json([
@@ -96,11 +94,20 @@ class MemberController extends Controller
                 ]);
             }
         }
+        if (isset($request->email) && $request->email != 'undefined' && filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+            $member->email = $request->email;
+        }else{
+            return response()->json([
+                'level' => 'danger',
+                'message' => 'Not is Email',
+                'listmember' => $listMember
+            ]);
+        }
+        $member->status = 1;
         $member->created_at = date('y-m-d H:i:s');
-
-
         //Handle Add member:
         $action = $model->addMember($member);
+
         if ($action->messageCode) {
 
             //reload new data list.
@@ -167,11 +174,6 @@ class MemberController extends Controller
         ) {
             $member->name = $request->name;
         }
-        if (isset($request->email) && $request->email
-            && $request->email != 'undefined'
-        ) {
-            $member->email = $request->email;
-        }
         if (isset($request->address) && $request->address
             && $request->address != 'undefined'
         ) {
@@ -181,11 +183,11 @@ class MemberController extends Controller
             && $request->avatar
         ) {
             //validate extension of upload image:
-            $ext = $request->avatar->getMimeType();
+            $ext = $request->avatar->getClientMimeType();
             if (in_array($ext,
                 ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'])) {
                 //validate capacity of upload image:
-                if (!($request->avatar->getSize() > 10485760)) {
+                if (!($request->avatar->getClientSize() > 10485760)) {
                     //get original name of picture.
                     $thumbnail = $request->avatar->getClientOriginalName();
 
@@ -199,8 +201,12 @@ class MemberController extends Controller
                     $newThumbnail = $newName.".".$extension;
 
                     //move image to appropriate Folder:
-                    $request->avatar->move('admin/images/avatars/',
-                        $newThumbnail);
+                    try {
+                        $request->avatar->move('admin/images/avatars/',
+                            $newThumbnail);
+                    } catch (\Exception $exception) {
+                        $member->avatar = $newThumbnail;
+                    }
 
                     //delete current avatar if exist.
                     $thisMember = $model->getMemberById($id)->result;
@@ -229,13 +235,27 @@ class MemberController extends Controller
         } elseif ($request->avatar == $thisMember->avatar) {
             $member->avatar = $request->avatar;
         }
-        if (isset($request->status) && $request->status) {
-            $member->status = $request->status;
+
+        if (isset($request->email) && $request->email != 'undefined' && filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+            $member->email = $request->email;
+        }else{
+            return response()->json([
+                'level' => 'danger',
+                'message' => 'Not is Email',
+                'listmember' => $listMember
+            ]);
         }
         if (isset($request->age) && $request->age) {
             $member->age = $request->age;
+        }else{
+            return response()->json([
+                'level' => 'danger',
+                'message' => 'age must more than 0',
+                'listmember' => $listMember
+            ]);
         }
         $member->id = $id;
+        $member->status = 1;
         $member->updated_at = date('y-m-d H:i:s');
         //-------------------------------------------------//
 
@@ -243,6 +263,7 @@ class MemberController extends Controller
         $action = $model->updateMember($member);
         if ($action->messageCode) {
             $newListMember = $model->getListMember()->result;
+
             return response()->json([
                 'level' => 'success',
                 'message' => $action->message,
@@ -322,5 +343,4 @@ class MemberController extends Controller
     /**************************************************************************/
     /*************************       ENDFILE         **************************/
     /**************************************************************************/
-
 }
