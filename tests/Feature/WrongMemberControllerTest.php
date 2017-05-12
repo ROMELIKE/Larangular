@@ -63,6 +63,7 @@ class WrongMemberControllerTest extends TestCase
                 'email' => $editMember['email'],
             ]);
     }
+
     //test add.name empty
     public function testAddNameEmpty()
     {
@@ -83,6 +84,7 @@ class WrongMemberControllerTest extends TestCase
                 'email' => $newMember['email'],
             ]);
     }
+
     //test edit.name empty
     public function testEditNameEmpty()
     {
@@ -112,6 +114,7 @@ class WrongMemberControllerTest extends TestCase
                 'email' => $editMember['email'],
             ]);
     }
+
     //test add.address empty
     public function testAddAddressEmpty()
     {
@@ -132,6 +135,7 @@ class WrongMemberControllerTest extends TestCase
                 'email' => $newMember['email'],
             ]);
     }
+
     //test edit.address empty
     public function testEditAddressEmpty()
     {
@@ -161,6 +165,7 @@ class WrongMemberControllerTest extends TestCase
                 'email' => $editMember['email'],
             ]);
     }
+
     //test add.age empty
     public function testAddAgeEmpty()
     {
@@ -232,8 +237,9 @@ class WrongMemberControllerTest extends TestCase
                 'email' => $newMember['email'],
             ]);
     }
+
     //test edit.address 301 character
-    public function testEditAddress300Characters()
+    public function testEditAddress301Characters()
     {
         $newMember = Factory(MemberModel::class)->create([
             'name' => 'RomeCody',
@@ -261,6 +267,7 @@ class WrongMemberControllerTest extends TestCase
                 'email' => $editMember['email'],
             ]);
     }
+
     //test add.age 3 digit
     public function testAddAge3Digits()
     {
@@ -312,7 +319,10 @@ class WrongMemberControllerTest extends TestCase
             ]);
     }
 
-    //test  add age charater not number
+
+    /**
+     *  //test  add age charater not number
+     */
     public function testAddAgeNotNumber()
     {
         $newMember = [
@@ -332,7 +342,10 @@ class WrongMemberControllerTest extends TestCase
                 'email' => $newMember['email'],
             ]);
     }
-    //test  edit age charater not number
+
+    /**
+     * //test  edit age charater not number
+     */
     public function testEditAgeNotNumber()
     {
         $newMember = Factory(MemberModel::class)->create([
@@ -362,8 +375,133 @@ class WrongMemberControllerTest extends TestCase
             ]);
     }
 
-    //test Add image morethan 10MB
-    //test Edit image morethan 10MB
-    //test Add image's extention not support
-    //test Edit image's extention not support
+    /**
+     * //test Add image morethan 10MB
+     */
+    public function testAddImageGreaterThan10MB()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 12112121212121212, $error = null, $test = true);
+
+        $newMember = [
+            'name' => 'basic',
+            'address' => 'basic address',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+        $response = $this->call('POST', route('post.add'), $newMember);
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseMissing('member',
+            [
+                'name' => $newMember['name'],
+                'address' => $newMember['address'],
+                'age' => $newMember['age'],
+                'email' => $newMember['email'],
+            ]);
+    }
+    /**
+     * test Edit image morethan 10MB
+     */
+    public function testEditImageGreaterThan10MB()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 10485700000, $error = null, $test = true);
+
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => 'Basically',
+            'address' => 'basically',
+            'age' => 21,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseMissing('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
+    }
+
+
+    /**
+     * //test Add image's extention not support
+     */
+    public function testAddImageExtentionNotSupport()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.mp3', 'audio/mp3', 12112, $error = null, $test = true);
+
+        $newMember = [
+            'name' => 'basic',
+            'address' => 'basic address',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+        $response = $this->call('POST', route('post.add'), $newMember);
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseMissing('member',
+            [
+                'name' => $newMember['name'],
+                'address' => $newMember['address'],
+                'age' => $newMember['age'],
+                'email' => $newMember['email'],
+            ]);
+    }
+
+    /**
+     * //test Edit image's extention not support
+     */
+    public function testEditImageExtentionNotSupport()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.mp3', 'audio/mp3', 10485700000, $error = null, $test = true);
+
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => 'Basically',
+            'address' => 'basically',
+            'age' => 21,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseMissing('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
+    }
 }

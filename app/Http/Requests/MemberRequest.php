@@ -26,8 +26,7 @@ class MemberRequest extends FormRequest
         return [
             'name'=>"required|max:100|not_in:undefined",
             'address'=>'required|max:300|not_in:undefined',
-//            'avatar'=>'image|mimes:jpeg,jpg,png,gif|max:10240',
-            'age'=>'required|numeric|digits_between:1,2'
+            'age'=>'required|numeric|digits_between:1,2',
         ];
     }
     public function messages()
@@ -39,8 +38,8 @@ class MemberRequest extends FormRequest
             'age.numeric'=>'age must be a number',
             'age.digits_between:1,2'=>'age must only has 2 digits',
             'age.required'=>'Enter the age',
-            'address.required'=>'address is nacessary',
-            'address.not_in'=>'address is nacessary ( < 300)',
+            'address.required'=>'address is necessary',
+            'address.not_in'=>'address is necessary ( < 300)',
             'address.max'=>'address can not be more than 300 character',
         ];
     }

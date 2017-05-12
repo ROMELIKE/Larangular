@@ -43,10 +43,13 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
             case "add" :
                 $scope.frmTitle = "Add member";
                 $scope.member = {};
+                $scope.member.name = '';
+                $scope.member.address = '';
+                $scope.member.age = '';
+                $scope.member.email = '';
                 $scope.file = '';
-                $('#avatar').val('');
                 $('#image').attr('src', '');
-
+                $scope.frmStudent.$setPristine(true);
                 break;
             case "edit":
                 $scope.frmTitle = "Edit member";
@@ -107,7 +110,7 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
                 $("#myModal").modal('hide');
 
             }, function errorCallback(response) {
-                console.log(response);
+                alert('Error code : '+response.status+' fail!');
             });
         }
         if (state == 'edit') {
@@ -141,7 +144,7 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
                 // location.reload();
 
             }, function errorCallback(response) {
-                console.log(response);
+                alert('Error code : '+response.status+' fail!');
             });
         }
     }
@@ -150,7 +153,7 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
     //----------------------------------------------------------------------//
 
     $scope.confirmDelete = function (id) {
-        var isConfirmDelete = confirm('Bạn có muốn xóa dữ liệu này hay không?');
+        var isConfirmDelete = confirm('Delete it?');
         if (isConfirmDelete) {
             //send data to delete member;
             $http.get(API + 'delete/' + id).then(function successCallback(response) {
@@ -161,7 +164,7 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
                 $("#myModal").modal('hide');
 
             }, function errorCallback(response) {
-                console.log(response);
+                alert('Error code : '+response.status+' fail!');
             });
         }
     }

@@ -5,8 +5,6 @@ Route::get('/', function () {
     return view('admin.user.list');
 });
 
-
-//Route::get('test',['as'=>'get.test','uses'=>'MemberController@testImage']);
 Route::get('list',['as'=>'get.list','uses'=>'MemberController@getList']);
 Route::get('add',['as'=>'get.add','uses'=>'MemberController@getAdd']);
 

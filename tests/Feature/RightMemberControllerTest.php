@@ -11,7 +11,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 
-class MemberControllerTest extends TestCase
+class RightMemberControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
@@ -113,7 +113,37 @@ class MemberControllerTest extends TestCase
             ]);
     }
 
-    //test add.name 99 character
+    /**
+     * test delete have file
+     */
+    public function testDeleteMemberHaveAvatar()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 111, $error = null, $test = true);
+
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'Root',
+            'address' => 'TranDaiNghia',
+            'age' => 21,
+            'email' => 'romelike@gmail.com',
+            'avatar' => $image,
+        ]);
+        $response = $this->call('get',
+            route('get.delete', ['id' => $newMember->id]));
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseMissing('member',
+            [
+                'name' => 'Root',
+                'address' => 'TranDaiNghia',
+                'age' => 21,
+                'email' => 'romelike@gmail.com'
+            ]);
+    }
+
+    /**
+     * //test add.name 99 character
+     */
     public function testAddName99Charaters()
     {
         $newMember = [
@@ -134,7 +164,10 @@ class MemberControllerTest extends TestCase
             ]);
     }
 
-    //test add.name 100 character
+
+    /**
+     * //test add.name 100 character
+     */
     public function testAddName100Charaters()
     {
         $newMember = [
@@ -155,7 +188,10 @@ class MemberControllerTest extends TestCase
             ]);
     }
 
-    //test edit.name 99 character
+
+    /**
+     *test edit.name 99 character
+     */
     public function testEditName99Characters()
     {
         $newMember = Factory(MemberModel::class)->create([
@@ -185,7 +221,10 @@ class MemberControllerTest extends TestCase
             ]);
     }
 
-    //test edit.name 100 character
+    //
+    /**
+     *test edit.name 100 character
+     */
     public function testEditName100Characters()
     {
         $newMember = Factory(MemberModel::class)->create([
@@ -215,7 +254,10 @@ class MemberControllerTest extends TestCase
             ]);
     }
 
-    //test add.address 299 character
+    //
+    /**
+     *test add.address 299 character
+     */
     public function testAddAddress299Charaters()
     {
         $newMember = [
@@ -236,7 +278,10 @@ class MemberControllerTest extends TestCase
             ]);
     }
 
-    //test edit.address 299 character
+    //
+    /**
+     *test edit.address 299 character
+     */
     public function testEditAddress299Characters()
     {
         $newMember = Factory(MemberModel::class)->create([
@@ -266,7 +311,10 @@ class MemberControllerTest extends TestCase
             ]);
     }
 
-    //test add.address 300 character
+    //
+    /**
+     *test add.address 300 character
+     */
     public function testAddAddress300Charaters()
     {
         $newMember = [
@@ -287,7 +335,10 @@ class MemberControllerTest extends TestCase
             ]);
     }
 
-    //test edit.address 300 character
+    //
+    /**
+     *test edit.address 300 character
+     */
     public function testEditAddress300Characters()
     {
         $newMember = Factory(MemberModel::class)->create([
@@ -317,14 +368,16 @@ class MemberControllerTest extends TestCase
             ]);
     }
 
-    //test add.image lessthan 10MB
+    //
+    /**
+     *test add.image lessthan 10MB
+     */
     public function testAddImageLessthan10MB()
     {
         $image
-            = new \Symfony\Component\HttpFoundation\File\UploadedFile(storage_path('images\test-file.csv'),
-            'leuleu.jpg','image/png',3444, $error = null, $test = true);
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 111, $error = null, $test = true);
 
-//        dd($image->getClientSize());
         $newMember = [
             'name' => 'basic',
             'address' => 'basic address',
@@ -332,7 +385,6 @@ class MemberControllerTest extends TestCase
             'email' => 'romecody@gmail.com',
             'avatar' => $image,
         ];
-
         $response = $this->call('POST', route('post.add'), $newMember);
         $this->assertEquals(200, $response->status());
         $this->assertDatabaseHas('member',
@@ -344,45 +396,307 @@ class MemberControllerTest extends TestCase
             ]);
     }
 
-    //test edit.image lessthan 10MB
+    //
+    /**
+     *test edit.image lessthan 10MB
+     */
     public function testEditImageLessthan10MB()
     {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/jpg', 104857, $error = null, $test = true);
 
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => 'Basically',
+            'address' => 'basically',
+            'age' => 21,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
     }
 
-    //test add.image's extention = jpg
-    public function addImageJpg()
+    /**
+     * test add image equal 10 MB
+     */
+    public function testAddImageEqual10MB()
     {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 10485760, $error = null, $test = true);
 
+        $newMember = [
+            'name' => 'basic',
+            'address' => 'basic address',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+        $response = $this->call('POST', route('post.add'), $newMember);
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $newMember['name'],
+                'address' => $newMember['address'],
+                'age' => $newMember['age'],
+                'email' => $newMember['email'],
+            ]);
     }
 
-    //test edit.image's extention = jpg
-    public function editImageJpg()
+    /**
+     * test Edit image equal 10MB
+     */
+    public function testEditImageEqual10MB()
     {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.jpg', 'image/jpg', 10485760, $error = null, $test = true);
 
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => 'Basically',
+            'address' => 'basically',
+            'age' => 21,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
+    }
+    //
+    /**
+     *test add.image's extention = jpg
+     */
+    public function testAddImageJpg()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.jpg', 'image/jpg', 111, $error = null, $test = true);
+
+        $newMember = [
+            'name' => 'basic',
+            'address' => 'basic address',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+        $response = $this->call('POST', route('post.add'), $newMember);
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $newMember['name'],
+                'address' => $newMember['address'],
+                'age' => $newMember['age'],
+                'email' => $newMember['email'],
+            ]);
     }
 
-    //test add.image's extention = png
-    public function addImagePng()
+    //
+    /**
+     *test edit.image's extention = jpg
+     */
+    public function testEditImageJpg()
     {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.jpg', 'image/jpg', 104857, $error = null, $test = true);
 
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => 'Basically',
+            'address' => 'basically',
+            'age' => 21,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
     }
 
-    //test edit.image's extention = png
-    public function editImagePng()
+    //
+    /**
+     *test add.image's extention = png
+     */
+    public function testAddImagePng()
     {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 111, $error = null, $test = true);
 
+        $newMember = [
+            'name' => 'basic',
+            'address' => 'basic address',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+        $response = $this->call('POST', route('post.add'), $newMember);
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $newMember['name'],
+                'address' => $newMember['address'],
+                'age' => $newMember['age'],
+                'email' => $newMember['email'],
+            ]);
     }
 
-    //test add.image's extention = png
-    public function addImageGif()
+    //
+    /**
+     *test edit.image's extention = png
+     */
+    public function testEditImagePng()
     {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 104857, $error = null, $test = true);
 
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => 'Basically',
+            'address' => 'basically',
+            'age' => 21,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
     }
 
-    //test edit.image's extention = png
-    public function editImageGif()
+    //
+    /**
+     * test add.image's extention = gif
+     */
+    public function testAddImageGif()
     {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 111, $error = null, $test = true);
 
+        $newMember = [
+            'name' => 'basic',
+            'address' => 'basic address',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+        $response = $this->call('POST', route('post.add'), $newMember);
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $newMember['name'],
+                'address' => $newMember['address'],
+                'age' => $newMember['age'],
+                'email' => $newMember['email'],
+            ]);
+    }
+
+
+    /**
+     *test edit.image's extention = gif
+     */
+    public function testEditImageGif()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 104857, $error = null, $test = true);
+
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => 'Basically',
+            'address' => 'basically',
+            'age' => 21,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
     }
 }

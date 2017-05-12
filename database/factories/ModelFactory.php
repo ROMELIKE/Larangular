@@ -24,7 +24,7 @@ $factory->define(App\Model\User::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(App\Model\MemberModel::class, function (Faker\Generator $faker) {
-    static $password;
+//    static $password;
 
     return [
         'name' => $faker->name,
