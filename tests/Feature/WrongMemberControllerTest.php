@@ -382,7 +382,8 @@ class WrongMemberControllerTest extends TestCase
     {
         $image
             = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
-            'leuleu.png', 'image/png', 12112121212121212, $error = null, $test = true);
+            'leuleu.png', 'image/png', 12112121212121212, $error = null,
+            $test = true);
 
         $newMember = [
             'name' => 'basic',
@@ -401,6 +402,7 @@ class WrongMemberControllerTest extends TestCase
                 'email' => $newMember['email'],
             ]);
     }
+
     /**
      * test Edit image morethan 10MB
      */
@@ -408,7 +410,8 @@ class WrongMemberControllerTest extends TestCase
     {
         $image
             = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
-            'leuleu.png', 'image/png', 10485700000, $error = null, $test = true);
+            'leuleu.png', 'image/png', 10485700000, $error = null,
+            $test = true);
 
         $newMember = Factory(MemberModel::class)->create([
             'name' => 'RomeCody',
@@ -474,7 +477,8 @@ class WrongMemberControllerTest extends TestCase
     {
         $image
             = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
-            'leuleu.mp3', 'audio/mp3', 10485700000, $error = null, $test = true);
+            'leuleu.mp3', 'audio/mp3', 10485700000, $error = null,
+            $test = true);
 
         $newMember = Factory(MemberModel::class)->create([
             'name' => 'RomeCody',
@@ -489,6 +493,65 @@ class WrongMemberControllerTest extends TestCase
             'address' => 'basically',
             'age' => 21,
             'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseMissing('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
+    }
+
+    public function testAddEmailWrong()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.mp3', 'audio/mp3', 12112, $error = null, $test = true);
+
+        $newMember = [
+            'name' => 'basic',
+            'address' => 'basic address',
+            'age' => 23,
+            'email' => 'romecodyleuleuleu',
+            'avatar' => $image,
+        ];
+        $response = $this->call('POST', route('post.add'), $newMember);
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseMissing('member',
+            [
+                'name' => $newMember['name'],
+                'address' => $newMember['address'],
+                'age' => $newMember['age'],
+                'email' => $newMember['email'],
+            ]);
+    }
+    public function testEditEmailWrong()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.mp3', 'audio/mp3', 10485700000, $error = null,
+            $test = true);
+
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => 'Basically',
+            'address' => 'basically',
+            'age' => 21,
+            'email' => 'romecodyyyyyyyyyyyyyyyyy',
             'avatar' => $image,
         ];
 

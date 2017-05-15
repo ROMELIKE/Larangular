@@ -641,7 +641,7 @@ class RightMemberControllerTest extends TestCase
     {
         $image
             = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
-            'leuleu.png', 'image/png', 111, $error = null, $test = true);
+            'leuleu.gif', 'image/gif', 111, $error = null, $test = true);
 
         $newMember = [
             'name' => 'basic',
@@ -669,7 +669,7 @@ class RightMemberControllerTest extends TestCase
     {
         $image
             = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
-            'leuleu.png', 'image/png', 104857, $error = null, $test = true);
+            'leuleu.gif', 'image/gif', 104857, $error = null, $test = true);
 
         $newMember = Factory(MemberModel::class)->create([
             'name' => 'RomeCody',
@@ -682,6 +682,254 @@ class RightMemberControllerTest extends TestCase
         $editMember = [
             'name' => 'Basically',
             'address' => 'basically',
+            'age' => 21,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
+    }
+    public function testAddScriptName()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 111, $error = null, $test = true);
+
+        $newMember = [
+            'name' => "<script>alert('leuleuleu')</script>",
+            'address' => 'basic address',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+        $response = $this->call('POST', route('post.add'), $newMember);
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $newMember['name'],
+                'address' => $newMember['address'],
+                'age' => $newMember['age'],
+                'email' => $newMember['email'],
+            ]);
+    }
+
+
+    /**
+     *test edit.image's extention = gif
+     */
+    public function testEditScriptName()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 104857, $error = null, $test = true);
+
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => "<script>alert('leuleuleu')</script>",
+            'address' => 'basically',
+            'age' => 21,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
+    }
+    public function testAddScriptAddress()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 111, $error = null, $test = true);
+
+        $newMember = [
+            'name' => "basically",
+            'address' => "<script>alert('leuleuleu')</script>",
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+        $response = $this->call('POST', route('post.add'), $newMember);
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $newMember['name'],
+                'address' => $newMember['address'],
+                'age' => $newMember['age'],
+                'email' => $newMember['email'],
+            ]);
+    }
+
+
+    /**
+     *test edit.image's extention = gif
+     */
+    public function testEditScriptAddress()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 104857, $error = null, $test = true);
+
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => "basically",
+            'address' => "<script>alert('leuleuleu')</script>",
+            'age' => 21,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
+    }
+    public function testAddNameTo0()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 111, $error = null, $test = true);
+
+        $newMember = [
+            'name' => 0,
+            'address' => "<script>alert('leuleuleu')</script>",
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+        $response = $this->call('POST', route('post.add'), $newMember);
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $newMember['name'],
+                'address' => $newMember['address'],
+                'age' => $newMember['age'],
+                'email' => $newMember['email'],
+            ]);
+    }
+
+
+    /**
+     *test edit.image's extention = gif
+     */
+    public function testEditNameTo0()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 104857, $error = null, $test = true);
+
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => 0,
+            'address' => "<script>alert('leuleuleu')</script>",
+            'age' => 21,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+
+        $response = $this->call('POST',
+            route('post.edit', ['id' => $newMember->id]), $editMember);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $editMember['name'],
+                'address' => $editMember['address'],
+                'age' => $editMember['age'],
+                'email' => $editMember['email'],
+            ]);
+    }
+    public function testAddAddressTo0()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 111, $error = null, $test = true);
+
+        $newMember = [
+            'name' => "basically",
+            'address' => 0,
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => $image,
+        ];
+        $response = $this->call('POST', route('post.add'), $newMember);
+        $this->assertEquals(200, $response->status());
+        $this->assertDatabaseHas('member',
+            [
+                'name' => $newMember['name'],
+                'address' => $newMember['address'],
+                'age' => $newMember['age'],
+                'email' => $newMember['email'],
+            ]);
+    }
+
+
+    /**
+     *test edit.image's extention = gif
+     */
+    public function testEditAddressTo0()
+    {
+        $image
+            = new \Symfony\Component\HttpFoundation\File\UploadedFile(public_path('admin\images\avatars\test-file.csv'),
+            'leuleu.png', 'image/png', 104857, $error = null, $test = true);
+
+        $newMember = Factory(MemberModel::class)->create([
+            'name' => 'RomeCody',
+            'address' => 'NamTuLiem,HaNoi',
+            'age' => 23,
+            'email' => 'romecody@gmail.com',
+            'avatar' => 'user.png'
+        ]);
+
+        $editMember = [
+            'name' => "basically",
+            'address' => 0,
             'age' => 21,
             'email' => 'romecody@gmail.com',
             'avatar' => $image,

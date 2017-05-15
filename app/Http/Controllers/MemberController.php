@@ -35,15 +35,19 @@ class MemberController extends Controller
         $model = new MemberModel();
         $listMember = $model->getListMember()->result;
 
-        if (isset($request->name) && $request->name ) {
+        if (isset($request->name) && $request->name) {
             $member->name = $request->name;
+        } elseif ($request->name == 0) {
+            $member->name = (string)$request->name;
         }
-        if (isset($request->address) && $request->address ) {
+        if (isset($request->address) && $request->address) {
             $member->address = $request->address;
+        } elseif ($request->address == 0) {
+            $member->address = (string)$request->address;
         }
-        if (isset($request->age) && $request->age ) {
+        if (isset($request->age) && $request->age) {
             $member->age = $request->age;
-        }else{
+        } else {
             return response()->json([
                 'level' => 'danger',
                 'message' => 'age must more than 0',
@@ -56,7 +60,7 @@ class MemberController extends Controller
         ) {
             $mimeType = $request->avatar->getClientMimeType();
             if (in_array($mimeType,
-                ['image/jpeg', 'image/png', 'image/jpg', 'gif'])) {
+                ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'])) {
                 //validate capacity of upload image:
                 if (!($request->avatar->getClientSize() > 10485760)) {
                     //get original name of picture.
@@ -94,15 +98,22 @@ class MemberController extends Controller
                 ]);
             }
         }
-        if (isset($request->email) && $request->email != 'undefined' && filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
-            $member->email = $request->email;
-        }else{
-            return response()->json([
-                'level' => 'danger',
-                'message' => 'Not is Email',
-                'listmember' => $listMember
-            ]);
+        if (isset($request->email) && $request->email != 'undefined'
+            && $request->email
+        ) {
+            if (filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+                $member->email = $request->email;
+            } else {
+                return response()->json([
+                    'level' => 'danger',
+                    'message' => 'Not is Email',
+                    'listmember' => $listMember
+                ]);
+            }
+        } else {
+            $member->email = null;
         }
+
         $member->status = 1;
         $member->created_at = date('y-m-d H:i:s');
         //Handle Add member:
@@ -173,11 +184,15 @@ class MemberController extends Controller
             && $request->name != 'undefined'
         ) {
             $member->name = $request->name;
+        } elseif ($request->name == 0) {
+            $member->name = (string)$request->name;
         }
         if (isset($request->address) && $request->address
             && $request->address != 'undefined'
         ) {
             $member->address = $request->address;
+        } elseif ($request->address == 0) {
+            $member->address = (string)$request->address;
         }
         if (isset($request->avatar) && $request->avatar != 'undefined'
             && $request->avatar
@@ -236,24 +251,33 @@ class MemberController extends Controller
             $member->avatar = $request->avatar;
         }
 
-        if (isset($request->email) && $request->email != 'undefined' && filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
-            $member->email = $request->email;
-        }else{
-            return response()->json([
-                'level' => 'danger',
-                'message' => 'Not is Email',
-                'listmember' => $listMember
-            ]);
+        if (isset($request->email) && $request->email != 'undefined'
+            && $request->email
+            && $request->email != 'null'
+        ) {
+            if (filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+                $member->email = $request->email;
+            } else {
+                return response()->json([
+                    'level' => 'danger',
+                    'message' => 'Not is Email',
+                    'listmember' => $listMember
+                ]);
+            }
+        } else {
+            $member->email = '';
         }
+
         if (isset($request->age) && $request->age) {
             $member->age = $request->age;
-        }else{
+        } else {
             return response()->json([
                 'level' => 'danger',
                 'message' => 'age must more than 0',
                 'listmember' => $listMember
             ]);
         }
+
         $member->id = $id;
         $member->status = 1;
         $member->updated_at = date('y-m-d H:i:s');

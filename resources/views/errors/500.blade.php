@@ -1,6 +1,4 @@
-@extends('user.master')
-@section('title','404 page not found!')
-@section('content')
+
     <div class="about">
         <div class="container">
             <div class="page-not-found">
@@ -9,4 +7,3 @@
             </div>
         </div>
     </div>
-@endsection

@@ -1,5 +1,4 @@
-var MyApp = angular.module('MyApp', ['angularUtils.directives.dirPagination', 'ngMessages', 'ngFileUpload'])
-    .constant('API', 'http://localhost/vovan/ScutiTestApp3Test/public/');//dependecy theo stt
+var MyApp = angular.module('MyApp', ['angularUtils.directives.dirPagination', 'ngMessages', 'ngFileUpload']);//dependecy theo stt
 
 //----------------------------------------------------------------------//
 //---------------------------declare to handle file upload:---------------------//
@@ -24,10 +23,10 @@ MyApp.directive('file', function () {
 //--------------declare to Mycontroller controller:---------------------//
 //----------------------------------------------------------------------//
 
-MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout' ,'API', function ($scope, $http, $log, Upload, $timeout ,API) {
+MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout', function ($scope, $http, $log, Upload, $timeout ,API) {
 
     //Handle to get the list of member:
-    $http.get(API + 'list').then(function successCallback(response) {
+    $http.get('list').then(function successCallback(response) {
         $scope.members = response.data.members;
     }, function errorCallback(response) {
         $log.error(response);
@@ -47,7 +46,7 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
                 $scope.member.address = '';
                 $scope.member.age = '';
                 $scope.member.email = '';
-                $scope.file = '';
+                $scope.file ="";
                 $('#image').attr('src', '');
                 $scope.frmStudent.$setPristine(true);
                 break;
@@ -56,10 +55,10 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
                 $scope.id = id;
                 $scope.file = '';
 
-                $http.get(API + 'edit/' + id).then(function successCallback(response) {
+                $http.get('edit/' + id).then(function successCallback(response) {
 
                     $('#avatar').val('');
-                    $('#image').attr('src', API+'admin/images/avatars/'+response.data.thisMember.avatar);
+                    $('#image').attr('src', 'admin/images/avatars/'+response.data.thisMember.avatar);
                     //get the member info , bind to member, take to view.
                     $scope.member = response.data.thisMember;
 
@@ -81,7 +80,7 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
 
     $scope.save = function (state, id) {
         if (state == 'add') {
-            var url = API + 'add';
+            var url = 'add';
             var data = {
                 name: $scope.member.name,
                 email: $scope.member.email,
@@ -115,7 +114,7 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
         }
         if (state == 'edit') {
 
-            var url = API + 'edit/' + id;
+            var url = 'edit/' + id;
             var data = {
                 name: $scope.member.name,
                 email: $scope.member.email,
@@ -156,7 +155,7 @@ MyApp.controller('MyController', ['$scope', '$http', '$log', 'Upload', '$timeout
         var isConfirmDelete = confirm('Delete it?');
         if (isConfirmDelete) {
             //send data to delete member;
-            $http.get(API + 'delete/' + id).then(function successCallback(response) {
+            $http.get('delete/' + id).then(function successCallback(response) {
 
                 //get new data list (do not reload)
                 $scope.members = response.data.listmember;

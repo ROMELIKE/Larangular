@@ -65,11 +65,15 @@ class MemberModel extends Model
         $param = [];
         if ($member->name) {
             $param['name'] = $member->name;
+        } elseif ($member->name == 0) {
+            $param['name'] = '0';
         } else {
-            $param['name'] = null;
+            $param['name'] = '';
         }
         if ($member->address) {
             $param['address'] = $member->address;
+        } elseif ($member->address == 0) {
+            $param['address'] = '0';
         } else {
             $param['address'] = null;
         }
@@ -130,9 +134,13 @@ class MemberModel extends Model
         $param = [];
         if ($member->name) {
             $param['name'] = $member->name;
+        }elseif ($member->name == 0) {
+            $param['name'] = '0';
         }
         if ($member->address) {
             $param['address'] = $member->address;
+        }elseif ($member->address == 0) {
+            $param['address'] = '0';
         }
         if ($member->age) {
             $param['age'] = $member->age;
@@ -142,6 +150,8 @@ class MemberModel extends Model
         }
         if ($member->email) {
             $param['email'] = $member->email;
+        } else {
+            $param['email'] = null;
         }
         if ($member->status) {
             $param['status'] = 1;
